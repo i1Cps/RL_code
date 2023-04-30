@@ -36,7 +36,7 @@ class Agent:
 
         return action.detach().cpu().numpy()[0]
 
-    # For phil debugging. This only gets called once before error gets thrown. (Ignoring the 3 initial calls on agent object creation) - this env has 3 agents
+    # debugging. This only gets called once before error gets thrown. (Ignoring the 3 initial calls on agent object creation) - this env has 3 agents
     def update_network_parameters(self, tau=None):
         #print('Updating_network_parameters, beware!')
         if tau is None:
