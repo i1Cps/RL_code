@@ -40,7 +40,7 @@ class ActorNetwork(nn.Module):
         super(ActorNetwork, self).__init__()
 
         self.chkpt_file = os.path.join(chkpt_dir, name)
-        #print('input dioms', input_dims)
+        #print('input dioms',input_dims)
 
         self.fc1 = nn.Linear(input_dims, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
@@ -62,6 +62,7 @@ class ActorNetwork(nn.Module):
         #pi = T.softmax(nn.Linear(x1, self.fc2.weight.clone()))
         return pi """
     
+    # The code was also pointing here but i honestly tried my best to make sure there were no implace modifications. I tried alot of variations,  critic forward is fine.
     def forward(self, state):
         x = self.fc1(state)
         x = F.relu(x.clone())

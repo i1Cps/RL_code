@@ -9,7 +9,8 @@ class MultiAgentReplayBuffer:
         self.actor_dims = actor_dims
         self.batch_size = batch_size
         self.n_actions = n_actions
-
+        
+        # Creates empty np arrays with size of relevent action space and depth of mem_size
         self.state_memory = np.zeros((self.mem_size, critic_dims))
         self.new_state_memory = np.zeros((self.mem_size, critic_dims))
         self.reward_memory = np.zeros((self.mem_size, n_agents))
@@ -17,6 +18,7 @@ class MultiAgentReplayBuffer:
 
         self.init_actor_memory()
 
+    # Creates a seperate memory for each agent
     def init_actor_memory(self):
         self.actor_state_memory = []
         self.actor_new_state_memory = []
@@ -30,7 +32,7 @@ class MultiAgentReplayBuffer:
             self.actor_action_memory.append(
                             np.zeros((self.mem_size, self.n_actions)))
 
-
+    # Stores arguments into np arrays created above
     def store_transition(self, raw_obs, state, action, reward, 
                                raw_obs_, state_, done):
         # this introduces a bug: if we fill up the memory capacity and then
@@ -46,20 +48,25 @@ class MultiAgentReplayBuffer:
         
         index = self.mem_cntr % self.mem_size
 
+        
+        #stores each agents seperate obsevations in their own memory
         for agent_idx in range(self.n_agents):
             self.actor_state_memory[agent_idx][index] = raw_obs[agent_idx]
             self.actor_new_state_memory[agent_idx][index] = raw_obs_[agent_idx]
             self.actor_action_memory[agent_idx][index] = action[agent_idx]
 
+        # stores everything in centra;ozed memory
         self.state_memory[index] = state
         self.new_state_memory[index] = state_
         self.reward_memory[index] = reward
         self.terminal_memory[index] = done
         self.mem_cntr += 1
 
+
     def sample_buffer(self):
         max_mem = min(self.mem_cntr, self.mem_size)
 
+        # This gets a random index range to sample from each memory type stored above
         batch = np.random.choice(max_mem, self.batch_size, replace=False)
 
         states = self.state_memory[batch]
@@ -78,6 +85,7 @@ class MultiAgentReplayBuffer:
         return actor_states, states, actions, rewards, \
                actor_new_states, states_, terminal
 
+    # Checks if another samples have been stored on the memory before learning can begin
     def ready(self):
         if self.mem_cntr >= self.batch_size:
             return True
